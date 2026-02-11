@@ -18,7 +18,7 @@ jobs:
         working-directory: Front-end
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v
     
     - name: Setup Node.js
       uses: actions/setup-node@v3
@@ -34,7 +34,7 @@ jobs:
       run: npm run build
     
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: frontend-build
         path: Front-end/dist/
