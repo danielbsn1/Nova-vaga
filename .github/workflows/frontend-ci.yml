@@ -18,7 +18,7 @@ jobs:
         working-directory: Front-end
     
     steps:
-    - uses: actions/checkout@v
+    - uses: actions/checkout@v4
     
     - name: Setup Node.js
       uses: actions/setup-node@v3
@@ -37,11 +37,11 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: frontend-build
-        path: Front-end/dist/
+        path: dist/
 
   deploy-staging:
     needs: build
-    if: github.ref == 'refs/heads/desenvolvedor'
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
     - name: Deploy to Staging
@@ -49,7 +49,7 @@ jobs:
 
   deploy-production:
     needs: build
-    if: github.ref == 'refs/heads/principal'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
     - name: Deploy to Production
