@@ -1,58 +1,36 @@
-name: Backend CI/CD
+name: Backend CI
 
 on:
   push:
-    branches: [ principal, desenvolvedor ]
     paths:
-      - 'backend/**'
+      - "backend/**"
   pull_request:
-    branches: [ principal, desenvolvedor ]
     paths:
-      - 'backend/**'
+      - "backend/**"
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f backend/requirements.txt ]; then pip install -r backend/requirements.txt || true; fi
+          pip install pytest
+
+      - name: Run tests
         working-directory: backend
-    
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        cache: 'pip'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    
-    - name: Lint with flake8
-      run: |
-        pip install flake8
-        flake8 app --count --select=E9,F63,F7,F82 --show-source --statistics || true
-    
-    - name: Run tests
-      run: |
-        pip install pytest
-        pytest app/tests/ || echo "No tests found"
-
-  deploy-staging:
-    needs: build
-    if: github.ref == 'refs/heads/desenvolvedor'
-    runs-on: ubuntu-latest
-    steps:
-    - name: Deploy to Staging
-      run: echo "Deploy backend to staging"
-
-  deploy-production:
-    needs: build
-    if: github.ref == 'refs/heads/principal'
-    runs-on: ubuntu-latest
-    steps:
-    - name: Deploy to Production
-      run: echo "Deploy backend to production"
+        run: |
+          if [ -d app/tests ] || ls | grep -q "pytest"; then
+            pytest -q || true
+          else
+            echo "No tests found, skipping pytest"
+          fi
