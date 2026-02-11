@@ -41,7 +41,7 @@ jobs:
 
   deploy-staging:
     needs: build
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/desenvolvedor'
     runs-on: ubuntu-latest
     steps:
     - name: Deploy to Staging
@@ -49,7 +49,7 @@ jobs:
 
   deploy-production:
     needs: build
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/principal'
     runs-on: ubuntu-latest
     steps:
     - name: Deploy to Production
