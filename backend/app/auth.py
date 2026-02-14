@@ -1,59 +1,60 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core.database import get_db
-from app.core.security import verify_password, create_access_token
-from app.models.empresa import Company
-
+from app.core.security import verify_password, create_access_token, get_password_hash
+from app.models.user import User
+from app.schemas import RegisterSchema, LoginSchema, Token
 
 auth_router = APIRouter(prefix="/auth", tags=["Auth"])
 
-@auth_router.post("/login")
-def login(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
-):
-    company = db.query(Company).filter(
-        Company.email == form_data.username
-    ).first()
 
-    if not company or not verify_password(form_data.password, company.hashed_password):
+@auth_router.post("/login", response_model=Token)
+def login(data: LoginSchema, db: Session = Depends(get_db)):
+    db_user = db.query(User).filter(User.email == data.email).first()
+
+    if not db_user or not verify_password(data.password, db_user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
+            detail="Credenciais inválidas",
         )
 
-    access_token = create_access_token(
-        data={"sub": str(company.id), "type": "company"}
+    token = create_access_token(
+        data={"sub": str(db_user.id), "tipo": db_user.tipo}
     )
 
     return {
-        "access_token": access_token,
-        "token_type": "bearer"
+        "access_token": token,
+        "token_type": "bearer",
     }
 
-@auth_router.post("/login/freelancer")
 
-def login_freelancer(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    db: Session = Depends(get_db)
-):
-    freelancer = db.query(freelancer).filter(
-        freelancer.email == form_data.username
-    ).first()
+@auth_router.post("/register", response_model=Token)
+def register(data: RegisterSchema, db: Session = Depends(get_db)):
+    existing_user = db.query(User).filter(User.email == data.email).first()
 
-    if not freelancer or not verify_password(form_data.password, freelancer.hashed_password):
+    if existing_user:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid email or password",
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Email já registrado",
         )
 
-    access_token = create_access_token(
-        data={"sub": str(freelancer.id), "type": "freelancer"}
+    new_user = User(
+        email=data.email,
+        hashed_password=get_password_hash(data.password),
+        tipo=data.tipo,
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    token = create_access_token(
+        data={"sub": str(new_user.id), "tipo": new_user.tipo}
     )
 
     return {
-        "access_token": access_token,
-        "token_type": "bearer"
+        "access_token": token,
+        "token_type": "bearer",
+    }
     }
