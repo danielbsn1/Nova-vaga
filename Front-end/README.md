@@ -27,3 +27,4 @@ npm run build
 
 ## 📦 CI/CD
 GitHub Actions configurado para CI/CD automático.
+
