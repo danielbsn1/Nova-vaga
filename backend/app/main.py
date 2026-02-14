@@ -20,3 +20,5 @@ app.include_router(api_router, prefix="/api")
 @app.get("/")
 def root():
     return {"message": "Nova Vaga API"}
+
+
