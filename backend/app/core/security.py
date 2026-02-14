@@ -1,24 +1,44 @@
-from datetime import datetime, timedelta
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+
 from jose import JWTError, jwt
-from passlib.context import CryptContext
-from .config import settings
+from sqlalchemy.orm import Session
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from app.core.database import get_db
+from app.models.user import User
+# Configurações de segurança e autenticação
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+SECRET_KEY = "sua_chave_secreta"
+ALGORITHM = "HS256"
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
-
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-
-def decode_token(token: str):
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
     try:
-        return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = int(payload.get("sub"))
     except JWTError:
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido ou expirado",
+        )
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuário não encontrado",
+        )
+ 
+    return user
+
+
+ # Verificar se o usuário tem permissão para acessar um recurso
+def verificar_permissao (user: User,tipos_permitidos: list[str]):
+    if user.tipo not in tipos_permitidos:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Permissão negada"
+        )

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class EmpresaBase(BaseModel):
     nome: str
@@ -14,3 +15,8 @@ class EmpresaResponse(EmpresaBase):
 
     class Config:
         from_attributes = True
+
+class registerEmpresa(BaseModel):
+    email: EmailStr
+    password: str
+    profile: EmpresaBase

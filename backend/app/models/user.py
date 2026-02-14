@@ -1,11 +1,12 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True)
-    tipo = Column(String, nullable=False)  # 'empresa' ou 'freelancer'
+    email = Column(String, unique=True, index=True)
+    tipo = Column(String)
+
+    candidaturas = relationship("Candidatura", back_populates="user")

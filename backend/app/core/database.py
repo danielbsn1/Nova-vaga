@@ -3,11 +3,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 from .config import settings
 
+# SQLAlchemy setup
 engine = create_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-
+# Models
 class Company(Base):
     __tablename__ = "companies"
 
@@ -71,6 +72,7 @@ class Candidatura(Base):
     freelancer = relationship("Freelancer", back_populates="candidaturas")
     job = relationship("Job", back_populates="candidaturas")
     company = relationship("Company", back_populates="candidaturas")
+
 
 
 def get_db():

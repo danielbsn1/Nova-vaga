@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class PagamentoCreate(BaseModel):
-    planoId: str
+    plano_id: str
 
 class PagamentoResponse(BaseModel):
     checkout_url: str

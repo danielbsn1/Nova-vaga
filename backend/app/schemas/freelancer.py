@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class FreelancerBase(BaseModel):
     nome: str
@@ -15,3 +16,8 @@ class FreelancerResponse(FreelancerBase):
 
     class Config:
         from_attributes = True
+
+class RegisterFreelancer(BaseModel):
+    email: EmailStr
+    password: str
+    profile: str

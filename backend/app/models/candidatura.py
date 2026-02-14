@@ -7,10 +7,10 @@ class Candidatura(Base):
     __tablename__ = "candidaturas"
 
     id = Column(Integer, primary_key=True, index=True)
-    vaga_id = Column(Integer, ForeignKey("vagas.id"))
-    freelancer_id = Column(Integer, ForeignKey("freelancers.id"))
+    vaga_id = Column(Integer, ForeignKey("vagas.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     status = Column(String, default="pendente")
     created_at = Column(DateTime, default=datetime.utcnow)
-    
+
     vaga = relationship("Vaga", back_populates="candidaturas")
-    freelancer = relationship("Freelancer", back_populates="candidaturas")
+    user = relationship("User", back_populates="candidaturas")
