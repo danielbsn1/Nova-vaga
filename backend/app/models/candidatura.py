@@ -14,3 +14,4 @@ class Candidatura(Base):
 
     vaga = relationship("Vaga", back_populates="candidaturas")
     user = relationship("User", back_populates="candidaturas")
+

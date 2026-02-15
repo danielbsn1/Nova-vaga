@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.database import get_db
 from app.core.security import get_current_user
@@ -33,3 +34,70 @@ def listar_candidaturas(
         )
 
     return []
+
+@router.patch("/{candidatura_id}/aceitar")
+def aceitar_candidatura(
+    candidatura_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    #  Só empresa
+    verificar_permissao(current_user, ["empresa"])
+
+    candidatura = db.query(Candidatura).filter(
+        Candidatura.id == candidatura_id
+    ).first()
+
+    if not candidatura:
+        raise HTTPException (
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Candidatura não encontrada"
+        )
+
+    #  Verificar se a vaga pertence à empresa
+    vaga = db.query(Vaga).filter(Vaga.id == candidatura.vaga_id).first()
+
+    if vaga.empresa_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não pode gerenciar esta candidatura"
+        )
+    candidatura.status = "aceita"
+    db.commit()
+
+    return {"message": "Candidatura aceita com sucesso"}
+
+
+@router.patch("/{candidatura_id}/recusar")
+def recusar_candidatura(
+    candidatura_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    verificar_permissao(current_user, ["empresa"])
+
+    candidatura = db.query(Candidatura).filter(
+        Candidatura.id == candidatura_id
+    ).first()
+
+    if not candidatura:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Candidatura não encontrada"
+
+        )
+
+    vaga = db.query(Vaga).filter(Vaga.id == candidatura.vaga_id).first()
+
+    if vaga.empresa_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Você não pode gerenciar esta candidatura"
+        )
+
+    candidatura.status = "recusada"
+    db.commit()
+
+    return {"message": "Candidatura recusada"}
+
+

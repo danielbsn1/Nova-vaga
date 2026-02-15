@@ -1,9 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers.auth import auth_router
-from app.core.database import Base, engine
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Nova Vaga API")
 
