@@ -14,5 +14,8 @@ class Vaga(Base):
     status = Column(String, default="aberta")
     created_at = Column(DateTime, default=datetime.utcnow)
     
+    quantidade_candidaturas = Column(Integer, default=1)
+    empresa_id = Column(Integer, ForeignKey("users.id"))
+
     empresa = relationship("Empresa", back_populates="vagas")
     candidaturas = relationship("Candidatura", back_populates="vaga")
