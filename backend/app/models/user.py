@@ -5,6 +5,11 @@ from app.core.database import Base
 class User(Base):
     __tablename__ = "users"
 
+    pagamentos = relationship(
+    "Pagamento",
+    back_populates="empresa"
+)
+
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String, unique=True, index=True)
     tipo = Column(String)
