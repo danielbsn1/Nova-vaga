@@ -20,7 +20,7 @@ def criar_checkout(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    #  Somente empresa pode pagar
+    
     verificar_permissao(current_user, ["empresa"])
 
     try:
