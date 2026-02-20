@@ -48,7 +48,7 @@ async def stripe_webhook(
     if not pagamento:
         raise HTTPException(status_code=404, detail="Pagamento não encontrado")
 
-    #  IDEMPOTÊNCIA
+    
     if pagamento.status == "pago":
         return {"status": "already_processed"}
 
