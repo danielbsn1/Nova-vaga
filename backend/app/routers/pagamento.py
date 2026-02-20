@@ -8,7 +8,7 @@ from app.services.pagamento_service import create_checkout_session
 from app.schemas.pagamento import PagamentoCreate, PagamentoResponse
 
 
-router = APIRouter(prefix="/pagamento", tags=["pagamento"])
+router = APIRouter(prefix="/pagamentos", tags=["pagamentos"])
 
 
 @router.post(

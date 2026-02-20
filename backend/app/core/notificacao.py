@@ -13,3 +13,5 @@ def criar_notificacao(
 
     db.add(notificacao)
     db.commit()
+
+    return notificacao

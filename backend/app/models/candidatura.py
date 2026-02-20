@@ -7,9 +7,9 @@ class Candidatura(Base):
     __tablename__ = "candidaturas"
 
     id = Column(Integer, primary_key=True, index=True)
-    vaga_id = Column(Integer, ForeignKey("vagas.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    status = Column(String, default="pendente")
+    vaga_id = Column(Integer, ForeignKey("vagas.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    status = Column(String, default="pendente", index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     vaga = relationship("Vaga", back_populates="candidaturas")

@@ -6,11 +6,11 @@ class Freelancer(Base):
     __tablename__ = "freelancers"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
-    nome = Column(String, nullable=False)
-    cpf = Column(String, unique=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, index=True)
+    nome = Column(String, nullable=False, index=True)
+    cpf = Column(String, unique=True, index=True)
     telefone = Column(String)
     habilidades = Column(String)
     
-    user = relationship("User")
+    user = relationship("User", back_populates="freelancer")
     candidaturas = relationship("Candidatura", back_populates="freelancer")

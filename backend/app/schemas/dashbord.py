@@ -8,6 +8,5 @@ class VagaDashboard(BaseModel):
     em_analise: int
     rejeitadas: int
 
-
     class Config:
         from_attributes = True

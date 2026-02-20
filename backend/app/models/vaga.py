@@ -7,15 +7,13 @@ class Vaga(Base):
     __tablename__ = "vagas"
 
     id = Column(Integer, primary_key=True, index=True)
-    empresa_id = Column(Integer, ForeignKey("empresas.id"))
-    titulo = Column(String, nullable=False)
+    empresa_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    titulo = Column(String, nullable=False, index=True)
     descricao = Column(String)
     valor = Column(Float)
-    status = Column(String, default="aberta")
+    status = Column(String, default="aberta", index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-    
     quantidade_candidaturas = Column(Integer, default=1)
-    empresa_id = Column(Integer, ForeignKey("users.id"))
 
     empresa = relationship("Empresa", back_populates="vagas")
     candidaturas = relationship("Candidatura", back_populates="vaga")
