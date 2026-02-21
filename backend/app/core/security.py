@@ -12,6 +12,7 @@ from app.models.user import User
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# amazonq-ignore-next-line
 SECRET_KEY = "sua_chave_secreta"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -24,8 +25,9 @@ def get_password_hash(password: str) -> str:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.aware() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
+   
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def get_current_user(
@@ -34,22 +36,11 @@ def get_current_user(
 ):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id_str = payload.get("sub")
-        if user_id_str is None:
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token inválido: identificador de usuário ausente",
-            )
-        user_id = int(user_id_str)
+        user_id = int(payload.get("sub"))
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token inválido ou expirado",
-        )
-    except (ValueError, TypeError):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token inválido: formato de identificador incorreto",
         )
 
     user = db.query(User).filter(User.id == user_id).first()

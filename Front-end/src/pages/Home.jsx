@@ -1,14 +1,22 @@
-import Header from '../components/Header'
-import Footer from '../components/Footer'
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function Home() {
+
+
+const Home = () => {
+    const navigate = useNavigate();
   return (
-    <>
-      <Header />
-      <main>
-        <h1>Bem-vindo ao Nova Vaga</h1>
-      </main>
-      <Footer />
-    </>
-  )
-}
+    <div>
+      <h1>Bem-vindo à Nova Vaga</h1>
+      <p>Escolha uma opção para continuar:</p>
+      <div>
+        <button onClick={() => navigate("/Login/Candidato")}>Candidato</button>
+        <button onClick={() => navigate("/Login/Empresa")}>Empresa</button>
+        <button onClick={() => navigate("/Cadastro/Empresa")}>Administrador</button>
+        <button onClick={() => navigate("/Cadastro/Candidato")}>Cadastre-se</button>
+      </div>
+    </div>
+  );
+};
+
+export default Home;
